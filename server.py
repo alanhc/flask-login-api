@@ -4,6 +4,7 @@ from flask import jsonify
 import requests
 import urllib3
 import urllib.parse
+import json
 urllib3.disable_warnings()
 
 """example
@@ -14,23 +15,31 @@ app = Flask(__name__)
 
 @app.route("/school_login", methods=['POST'])
 def post_json():
-    data = request.get_json()
+    re = request.get_json()
     payload = {
-        "t_tea_no":data['username'],
-        "t_tea_pass": data['password']
+        "t_tea_no":re['username'],
+        "t_tea_pass": re['password']
     }
     
     url = 'https://www.mcu.edu.tw/student/new-query/Chk_Pass_New_v1.asp'
     r = requests.post(url, data=payload, verify=False)
     r.encoding = 'big5'
-    msg = ""
+    response = {
+        "status":''
+    }
+    
+    #print(data)
     try:
-        name = r.cookies['std%5Fno']
-        name = urllib.parse.unquote(name)
-        msg = name
+        data = {}
+        for c in r.cookies:
+            data[ c.name ] = urllib.parse.unquote(c.value)
+        response['status'] = 'success'
+        response['id'] = data['std%5Fno']
+        response['name'] = data['std%5Fenm'].replace("+"," ")
+        
     except:
-        msg = 'password error'
-    return msg
+        response['status'] = 'error'
+    return response
 
 
 if __name__ == '__main__':
