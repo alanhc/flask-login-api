@@ -12,10 +12,6 @@ curl -X POST -H "Content-Type: application/json" -d '{"username" : "", "password
 """
 app = Flask(__name__)
 
-
-
-
-
 @app.route("/school_login", methods=['POST'])
 def post_json():
     data = request.get_json()
@@ -39,5 +35,6 @@ def post_json():
 
 if __name__ == '__main__':
     app.debug = True
-    app.run()
+    app.run(host='0.0.0.0', port=6001)
+    #app.run()
 
