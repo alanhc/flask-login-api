@@ -6,7 +6,7 @@ from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, PasswordField
 from wtforms.validators import DataRequired
-from flask import flash, redirect, url_for
+from flask import flash, redirect, url_for, session, make_response
 
 
 import requests
@@ -64,6 +64,9 @@ class NameForm(FlaskForm):
 @app.route("/", methods=['GET','POST'])
 def index():
     form=NameForm()
+    pre_url = session.get('pre_url')
+    if pre_url==None:
+        session['pre_url'] = request.referrer
     
     if form.submit.data:
         response = login(username=form.id.data, password=form.password.data)
@@ -71,6 +74,7 @@ def index():
             flash("password error")
         else:
             return jsonify(response)
+        
 
         
     return render_template('index.html',form=form)
